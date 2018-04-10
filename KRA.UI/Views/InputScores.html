@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <script src="../scripts/jquery-3.1.1.min.js"></script>
+    <script src="../scripts/bootstrap.min.js"></script>
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="../scripts/angular.js"></script>
+
+    <style>
+        .textbox {
+            width: 50%;
+            float: right;
+        }
+
+        .form-control {
+            height: 30px;
+        }
+    </style>
+
+    <script>
+
+        var app = angular.module("app", []);
+
+        app.service("GetJsonData", function ($http) {
+            this.usingWebService = function (url) {
+                $http.get(url)
+                    .then(function (response) {
+                        return response.data;
+                    });
+            }
+        });
+
+        app.controller("Ctrl1", function ($scope, $http, GetJsonData) {
+
+            //$scope.projects = GetJsonData.usingWebService("");
+            $scope.projects = [{ id: "1", name: "HTS" }, { id: "2", name: "MS" }, { id: "3", name: "PMO" }];
+
+            $scope.selectedProject = "";
+
+            $scope.getQuarters = function () {
+                //$scope.quarters = GetJsonData.usingWebService("" + $scope.selectedProject );
+
+                $scope.quarters = ["Q1", "Q2", "Q3", "Q4"];
+                $scope.selectedQuarter = "";
+
+            }
+
+            //$scope.projects = GetJsonData.usingWebService("");
+
+
+            $scope.getParameters = function () {
+
+                //  $scope.parameters = GetJsonData.usingWebService("" + $scope.selectedProject + $scope.selectedQuarter);
+
+                $scope.parameters = [{ AccParamID: "1", name: "CSAT", weightage: 25, score: 0 },
+                                  { AccParamID: "2", name: "Gross Margin", weightage: 25, score: 0 },
+                                  { AccParamID: "3", name: "Compliance Score", weightage: 25, score: 0 },
+                                  { AccParamID: "4", name: "DRE", weightage: 25, score: 0 }
+                ];
+                $scope.selectedParameter = "";
+                $scope.teamSize = 1;
+            }
+
+
+            $scope.saveScores = function () {
+                var data = { scores: $scope.parameters, teamSize: $scope.teamSize };
+                alert(JSON.stringify(data));
+                $http.post("", data);
+                alert("Scores saved");
+                $scope.selectedProject = "";
+                $scope.selectedQuarter = "";
+            }
+        });
+
+    </script>
+</head>
+
+<body ng-app="app" ng-controller="Ctrl1">
+    <div class="container">
+        <div style="height:  150px"></div>
+        <div class="form-horizontal">
+
+            <div class="form-group">
+                <ul>
+                    <li style="display:inline-block">
+                        <a href="ManageParameters.html">Manage Parameters</a>
+                    </li>
+                    <li style="display:inline-block">
+                        <a href="ManageParameterDefinitions.html">Manage Parameters Definitions</a>
+                    </li>
+                    <li style="display:inline-block">
+                        <a href="InputScores.html">Input Scores</a>
+                    </li>
+                    <li style="display:inline-block">
+                        <a href="PMReportDownload.html">PM Report Download</a>
+                    </li>
+                    <li style="display:inline-block">
+                        <a href="KRAReportDownload.html">KRA Report Download</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Select project :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedProject" ng-options="project.id as project.name for project in projects"
+                            ng-change="getQuarters()">
+                        <option value=""> --Select project-- </option>
+                    </select>
+                </div>
+
+                <label class="control-label col-md-2">Select Quarter :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedQuarter" ng-disabled="!selectedProject"
+                            ng-options="quarter for quarter in quarters" ng-change="getParameters()">
+                        <option value="">-Select Quarter-</option>
+                    </select>
+                </div>
+
+                <label class="control-label col-md-2" ng-show="selectedProject && selectedQuarter">Team Size</label>
+                <div class="col-md-2" ng-show="selectedProject && selectedQuarter">
+                    <input type="number" class="form-control" style="width:50%" ng-model="teamSize" min="1" />
+                </div>
+
+            </div>
+
+            <div class="form-group" ng-show="selectedProject && selectedQuarter">
+                <label class="control-label col-md-offset-3 col-md-2">Parameter</label>
+                <label class="control-label col-md-2">Weightage</label>
+                <label class="control-label col-md-2">Score</label>
+            </div>
+
+            <div class="form-group" ng-repeat="parameter in parameters" ng-show="selectedProject && selectedQuarter">
+                <label class="control-label col-md-offset-3 col-md-2">{{parameter.name}}</label>
+                <label class="control-label col-md-2">{{parameter.weightage}}%</label>
+                <div class="col-md-2">
+                    <input type="number" class="form-control textbox" ng-model="parameter.score" />
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="selectedProject && selectedQuarter">
+                <div class="col-md-7">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary" style="width:100%" ng-click="saveScores()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

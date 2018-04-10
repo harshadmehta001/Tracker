@@ -1,0 +1,187 @@
+﻿@{
+    ViewBag.Title = "Input Score";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src="../scripts/jquery-3.1.1.min.js"></script>
+    <script src="../scripts/bootstrap.min.js"></script>
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="../scripts/angular.js"></script>
+
+    <script src="~/scripts/KRA Tracker/InputScores.js"></script>
+
+    <style>
+        .table {
+            margin-bottom: 5px !important;
+        }
+
+        th {
+            text-align: center;
+            vertical-align: middle !important;
+            color: #efbe29;
+            border-top: 1px solid #ddd !important;
+            border-bottom: unset !important;
+        }
+
+        td {
+            text-align: center;
+            color: #294489;
+            vertical-align: middle !important;
+            border-top: none !important;
+        }
+
+        .panel-body {
+            padding: 1px 2px 0px 2px !important;
+            background-color: #f2f2f2;
+            border-radius: 5px !important;
+        }
+
+        .btn-primary {
+            background-color: #3c8dbc !important;
+            border-color: #367fa9 !important;
+            width: 100% !important;
+        }
+
+        .input-teamsize {
+            display: inline-flex;
+        }
+
+        .input-score {
+            margin: auto;
+            width: 45%;
+            display: inline-flex;
+        }
+
+        .table-left-col {
+            text-align: left !important;
+            padding-left: 55px !important;
+        }
+
+        .table-right-col {
+            width: 245px !important;
+        }
+
+        .error-msg {
+            color: red;
+        }
+
+        .header {
+            background-color: #294489;
+        }
+
+        .score-row {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .container-btn-save {
+            margin: 0px 35px 5px 0px !important;
+        }
+
+        .tip-label {
+            color: #f39c12;
+            text-align: left;
+            padding-left: 11% !important;
+        }
+    </style>
+
+</head>
+
+<body ng-app="app" ng-controller="InputScoreCtrl" ng-cloak class="ng-cloak">
+
+    <div class="container">
+        <div class="form-horizontal">
+
+            <ng-form name="inputForm">
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Select project :</label>
+                    <div class="col-md-2">
+                        <select class="form-control" ng-model="selectedProject" ng-options="project.AccountID as project.Name for project in projects"
+                                ng-change="getYears()">
+                            <option value=""> --Select project-- </option>
+                        </select>
+                    </div>
+
+                    <label class="control-label col-md-2">Select Year :</label>
+                    <div class="col-md-2">
+                        <select class="form-control" ng-model="selectedYear" ng-options="year for year in years"
+                                ng-change="getQuarters()" ng-disabled="!selectedProject">
+                            <option value=""> --Select Year-- </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2" ng-show="selectedProject && selectedYear">Select Quarter :</label>
+                    <div class="col-md-2" ng-show="selectedProject && selectedYear">
+                        <select class="form-control" ng-model="selectedQuarter"
+                                ng-options="quarter for quarter in quarters" ng-change="getParameters()">
+                            <option value="">-Select Quarter-</option>
+                        </select>
+                    </div>
+
+                    <label class="control-label col-md-2" ng-show="selectedProject && selectedYear && selectedQuarter">Team Size</label>
+                    <div class="col-md-2" ng-show="selectedProject && selectedYear && selectedQuarter">
+                        <input type="number" name="teamSize" class="form-control input-teamsize" ng-model="teamSize"
+                               pattern="^\d{1,3}(\.\d{1}){0,1}$" min="1" required />
+                        <span class="error-msg" ng-show="inputForm.teamSize.$error.required && !inputForm.teamSize.$pristine">*</span>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-show="selectedProject && selectedYear && selectedQuarter">
+                    <div class="col-md-offset-2 col-md-8" style="margin-top: 2%;">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <table class="table table-responsive">
+                                    <thead>
+                                        <tr class="header">
+                                            <th class="table-left-col"> Parameter </th>
+                                            <th> Weightage </th>
+                                            <th class="table-right-col"> Score </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="score-row" ng-repeat="parameter in parameters" ng-form="scoreForm">
+                                            <td class="table-left-col">
+                                                <label class="control-label">{{parameter.ParameterName}}</label>
+                                            </td>
+                                            <td>
+                                                <label class="control-label">{{parameter.Weightage}}%</label>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="score" class="form-control input-score" ng-model="parameter.Score"
+                                                       min="0" max="1000" pattern="^\d{1,3}(\.\d{1}){0,1}$" required />
+                                                <span class="error-msg" ng-show="scoreForm.score.$error.required && !scoreForm.score.$pristine">*</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="form-group container-btn-save">
+                                    <div class="col-md-7">
+                                        <label class="control-label tip-label" ng-show="inputForm.$error.required && !inputForm.$pristine">
+                                            Tip : Please fill all fields including team size.
+                                        </label>
+                                    </div>
+                                    <div class="col-md-offset-3 col-md-2">
+                                        <button class="btn btn-primary" ng-disabled="inputForm.$invalid || inputForm.$pristine" ng-click="saveScores()">
+                                            Save
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-form>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

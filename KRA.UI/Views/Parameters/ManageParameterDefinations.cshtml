@@ -1,0 +1,484 @@
+﻿@{
+    ViewBag.Title = "Manage Definitions";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <script src="~/scripts/jquery-3.1.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/scripts/bootstrap.min.js"></script>
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+
+    <script src="~/scripts/angular.min.js"></script>
+    <script src="~/scripts/angular-touch.js"></script>
+    <script src="~/scripts/angular-animate.min.js"></script>
+    <script src="~/scripts/ui-grid.min.js"></script>
+    <link href="~/Content/ui-grid.min.css" rel="stylesheet" />
+
+    <script src="~/scripts/KRA Tracker/ParameterDefinitions.js"></script>
+
+    <style>
+        .x {
+            background-color: #ecf0f5 !important;
+        }
+
+        .ui-grid {
+            border: 1px solid #000 !important;
+            background-color: #e9e9e9 !important;
+        }
+
+        .quarterRow {
+            background-color: #294489 !important;
+            color: #efbe29 !important;
+            font-weight: 700 !important;
+        }
+
+        .parameterRow {
+            background-color: #efbe29 !important;
+            color: #294489 !important;
+            font-weight: 700 !important;
+        }
+
+        .definitionRow {
+            background-color: #cdcdcd !important;
+            font-weight: 700 !important;
+        }
+
+        .parameter-container > div:nth-child(3n+5) {
+            margin-left: 25%;
+        }
+
+        .parameter-container > div:nth-child(n+2):nth-child(-n+4) {
+            padding-top: 0px !important;
+        }
+
+        .fa-less-than-equal:before {
+            content: "\2264";
+        }
+
+        .table {
+            margin-bottom: 5px !important;
+        }
+
+        th {
+            text-align: center;
+            vertical-align: middle !important;
+            color: #efbe29;
+            border-bottom: unset !important;
+        }
+
+        td {
+            text-align: center;
+            color: #294489;
+            vertical-align: middle !important;
+            border-top: none !important;
+        }
+
+        .panel-body {
+            background-color: #f2f2f2;
+        }
+
+        .panel-body-no-padding {
+            padding: unset !important;
+        }
+
+        .panel-body-padding {
+            padding: 15px !important;
+        }
+
+        .fa-size {
+            font-size: 20px;
+        }
+
+        .btn-primary {
+            background-color: #3c8dbc !important;
+            border-color: #367fa9 !important;
+        }
+
+        .input-weightage {
+            width: 50%;
+            display: inline-flex;
+        }
+
+        .container-link-new-param {
+            text-align: right !important;
+            padding-right: unset !important;
+            margin-top: 8px !important;
+        }
+
+        .link-new-param {
+            cursor: pointer;
+        }
+
+        .background-yellow {
+            background-color: #efbe29;
+        }
+
+        .background-blue {
+            background-color: #294489;
+        }
+
+        .range-input-col {
+            width: 255px;
+        }
+
+        .result-input-col {
+            width: 160px;
+        }
+
+        .container-add-icon {
+            background-color: #f2f2f2;
+            border: none;
+        }
+
+        .fa-plus {
+            color: green !important;
+        }
+
+        .fa-trash {
+            color: #ff6666 !important;
+        }
+
+
+
+        .definition-row {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table-left-col {
+            text-align: left !important;
+            padding-left: 55px !important;
+        }
+
+        .container-input-def {
+            margin: auto;
+            display: inline-flex;
+        }
+
+        .error-msg {
+            color: red;
+        }
+
+        .tip-label {
+            color: #f39c12;
+            text-align: left;
+            padding-left: 16% !important;
+        }
+
+        .btn-save {
+            width: 80%;
+        }
+
+        .container-btn-save {
+            margin-bottom: 5px !important;
+        }
+
+        .modal-dialog {
+            width: 500px !important;
+        }
+
+        .help-block {
+            margin-bottom: unset !important;
+        }
+
+        .container-input-new-param {
+            margin-bottom: 10px !important;
+        }
+
+        .container-list-parameters {
+            margin: auto !important;
+            border-top: 1px solid #000;
+            padding-top: 10px !important;
+            margin-top: 20px !important;
+        }
+
+        .container-fa-icon {
+            padding: 6px 17px 6px 11px !important;
+        }
+
+        .input-height-sm {
+            height: 28px !important;
+        }
+
+        .input-result-width {
+            width: 70% !important;
+        }
+
+        .label-checkbox {
+            text-align: left !important;
+        }
+
+        .input-checkbox {
+            width: 15px !important;
+            height: 15px !important;
+        }
+
+        .container-tip-label {
+            margin-bottom: unset !important;
+        }
+
+        .tip-label-parameter {
+            color: #f39c12 !important;
+            padding-top: unset !important;
+            text-align: left !important;
+            padding-left: 12.6% !important;
+        }
+
+        .btn-save-parameter {
+            width: 100% !important;
+        }
+
+        .link-clone {
+            color: #efbe29 !important;
+            text-decoration: none !important;
+        }
+
+            .link-clone:hover {
+                text-decoration: none;
+            }
+    </style>
+
+</head>
+<body ng-app="app" ng-controller="ParamDefinitionCtrl" ng-cloak class="ng-cloak">
+    <div class="container">
+        <div class="form-horizontal">
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Select Project :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedProject" ng-options="project.AccountID as project.Name for project in projects"
+                            ng-change="getYears()">
+                        <option value=""> --Select project-- </option>
+                    </select>
+                </div>
+
+                <label class="control-label col-md-2">Select Year :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedYear" ng-options="year for year in years"
+                            ng-change="getQuarters()" ng-disabled="!selectedProject">
+                        <option value=""> --Select Year-- </option>
+                    </select>
+                </div>
+
+                <div class="col-md-offset-1 col-md-2 container-link-new-param">
+                    <a class="link-new-param" data-toggle="modal" data-target="#addParameterModal" data-backdrop="static" ng-click="getAllParameters()"> Add New Parameter</a>
+                </div>
+            </div>
+
+            <ng-form name="definitionForm">
+                <div class="form-group">
+                    <label class="control-label col-md-2" ng-show="selectedYear">Select Quarter :</label>
+                    <div class="col-md-2">
+                        <select class="form-control" ng-model="selectedQuarter"  ng-show="selectedYear" ng-options="quarter for quarter in quarters"
+                                ng-change="getProjectParameters()">
+                            <option value="">-Select Quarter-</option>
+                        </select>
+                    </div>
+
+                    <label class="control-label col-md-2" ng-show="!defineParameter && allSelected()">Select Parameter :</label>
+                    <div class="col-md-2" ng-show="!defineParameter && allSelected()">
+                        <select class="form-control" ng-model="selectedParameter"
+                                ng-options="parameter.AccountParamID as parameter.ParameterName for parameter in parameters"
+                                ng-change="createParameterDefinitionTemplate()">
+                            <option value="">-Select parameter-</option>
+                        </select>
+                    </div>
+
+                    <label class="control-label col-md-2" ng-show="!definitionExist && selectedParameter && allSelected()">Weightage :</label>
+                    <div class="col-md-2" ng-show="!definitionExist && selectedParameter && allSelected()">
+                        <input type="number" name="weightage" class="form-control input-weightage"
+                               ng-model="weightage" min="1" max="100" pattern="^\d{1,3}(\.\d{1}){0,1}$" required />
+                        <span class="error-msg" ng-show="definitionForm.weightage.$error.required && !definitionForm.weightage.$pristine">*</span>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-show="!definitionExist && selectedParameter && allSelected()">
+                    <div class="col-md-12" style="padding-left: 6.7%;padding-right: 8.3%;margin-top: 2%;">
+                        <div class="panel panel-default" style="margin-bottom:5px !important;">
+                            <div class="panel-body panel-body-no-padding">
+                                <table class="table table-responsive">
+                                    <thead>
+                                        <tr class="background-blue">
+                                            <th> Definition </th>
+                                            <th class="range-input-col"> Minimum Value </th>
+                                            <th class="range-input-col"> Maximum Value </th>
+                                            <th class="result-input-col"> Result </th>
+                                            <th class="container-add-icon">
+                                                <a href="" ng-click="addParameterDefinitionTemplate()">
+                                                    <span>
+                                                        <i class="fa fa-plus fa-size"></i>
+                                                    </span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="definition-row" ng-repeat="definition in parameterDefinitions" ng-form="rangeForm">
+                                            <td>
+                                                <label>{{$index+1}}</label>
+                                            </td>
+                                            <td>
+                                                <div class="input-group container-input-def">
+                                                    <input type="number" name="minValue" class="form-control input-height-sm" ng-model="definition.MinValue"
+                                                           min="0" max="100" pattern="^\d{1,3}(\.\d{1}){0,1}$" required />
+                                                    <span class="input-group-addon container-fa-icon">
+                                                        <i class="fa fa-less-than-equal"></i>
+                                                    </span>
+                                                </div>
+                                                <span class="error-msg" ng-show="rangeForm.minValue.$error.required && !rangeForm.minValue.$pristine">*</span>
+                                            </td>
+                                            <td>
+                                                <div class="input-group container-input-def">
+                                                    <span class="input-group-addon container-fa-icon">
+                                                        <i class="fa fa-less-than-equal"></i>
+                                                    </span>
+                                                    <input type="number" name="maxValue" class="form-control input-height-sm" ng-model="definition.MaxValue"
+                                                           min="{{definition.MinValue}}" max="100" step="0.1" pattern="^\d{1,3}(\.\d{1}){0,1}$" required />
+                                                </div>
+                                                <span class="error-msg" ng-show="rangeForm.maxValue.$error.required && !rangeForm.maxValue.$pristine">*</span>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="result" class="form-control container-input-def input-height-sm input-result-width"
+                                                       ng-model="definition.Result" min="0" max="120" pattern="^[0-9]{1,3}$" required />
+                                                <span class="error-msg" ng-show="rangeForm.result.$error.required && !rangeForm.result.$pristine">*</span>
+                                            </td>
+                                            <td>
+                                                <a href="" ng-click="removeParameterDefinitionTemplate($index)">
+                                                    <span>
+                                                        <i class="fa fa-trash fa-size"></i>
+                                                    </span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="form-group container-btn-save">
+                                    <div class="col-md-7">
+                                        <label class="control-label tip-label"
+                                               ng-show="parameterDefinitions.length > 0 && definitionForm.$error.required && !definitionForm.$pristine">
+                                            Tip : Please fill all fields including weightage.
+                                        </label>
+                                        <label class="control-label tip-label" ng-show="parameterDefinitions.length == 0">
+                                            Tip : Please add atleast one definition row.
+                                        </label>
+                                    </div>
+                                    <div class="col-md-offset-3 col-md-2">
+                                        <button type="submit" class="btn btn-primary btn-save" ng-click="saveParameterDefinition()"
+                                                ng-disabled="parameterDefinitions.length == 0 || definitionForm.$invalid || definitionForm.$pristine">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="projectQuarters.length > 0">
+                        <label class="control-label col-md-2" style="margin-left: 23%;">Copy Definitionns Of :</label>
+                        <div class="col-md-1" ng-repeat="quarter in projectQuarters" style="padding: 7px 0px 0px 0px; margin-left: 2%;">
+                            <a class="link-clone" href="" ng-click="copyDefinitions(quarter.Quarter)">
+                                <span>
+                                    <i class="fa fa-clone fa-size"></i>
+                                </span>
+
+                            </a>
+                            {{ quarter.Quarter }}
+                        </div>
+                    </div>
+
+                </div>
+            </ng-form>
+
+            <div class="form-group" ng-show="defineParameter && selectedYear && selectedQuarter " ng-init="getAllParameters()">
+                <div class="col-md-12" style="padding-left: 6.7%;padding-right: 8.3%;margin-top: 2%;">
+                    <div class="panel panel-default">
+
+                        <div class="panel-body panel-body-padding">
+                            <div class="form-group container-tip-label" ng-show="allParameters.length == 0">
+                                <label class="control-label col-md-9 tip-label-parameter"> Tip : Please add some parameters first. </label>
+                            </div>
+                            <div class="form-group parameter-container" ng-show="allParameters.length != 0">
+                                <label class="control-label col-md-3">Select parameters :</label>
+                                <div class="checkbox col-md-3" ng-repeat="parameter in allParameters">
+                                    <label class="control-label label-checkbox">
+                                        <input type="checkbox" class="form-control input-checkbox"
+                                               ng-checked="selectedParameters.indexOf(parameter.ParamID) > -1" ng-click="parameterSelection(parameter.ParamID)">
+                                        {{ parameter.ParamName }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="allParameters.length != 0">
+                                <div class="col-md-9">
+                                    <label class="control-label tip-label-parameter" ng-show="selectedParameters.length <= 0">
+                                        Tip : Please choose atleast one parameter.
+                                    </label>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-primary btn-save-parameter" ng-disabled="selectedParameters.length <= 0" ng-click="saveNewParameter()">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12" style="padding-left: 6.7%;padding-right: 8.3%;">
+                    <div ui-grid="quarterGrid" ui-grid-expandable ng-if="!defineParameter && allSelected()" style="height: 460px;"></div>
+                </div>
+            </div>
+
+            <div class="container">
+                <!-- Modal -->
+                <div class="modal fade" id="addParameterModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Add KRA parameter</h4>
+                            </div>
+                            <div class="modal-body">
+                                <ng-form name="newParamaterForm">
+                                    <div class="form-horizontal">
+                                        <div class="form-group container-input-new-param">
+                                            <label class="col-md-12" for="newParameter">Parameter Name:</label>
+                                            <div class="col-md-12">
+                                                <input type="text" name="paramName" class="form-control" ng-model="newParameter" pattern="^[A-Za-z0-9]+([\s]{1}[A-Za-z0-9]+)*$" required>
+                                                <span class="help-block error-msg" ng-show="newParamaterForm.paramName.$error.required && !newParamaterForm.paramName.$pristine">Parameter name is required.</span>
+                                                <span class="help-block error-msg" ng-show="newParamaterForm.paramName.$error.pattern">Parameter name can only be alphanumeric.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            <button class="btn btn-primary"
+                                                    ng-disabled="newParamaterForm.paramName.$invalid" ng-click="addParameter()">
+                                                Add Parameter
+                                            </button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clearParameterName()">Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group container-list-parameters">
+                                        <label> Existing Parameters :</label>
+                                        <ul>
+                                            <li class="col-md-6" ng-repeat="parameter in allParameters">{{parameter.ParamName}}</li>
+                                        </ul>
+                                    </div>
+                                </ng-form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

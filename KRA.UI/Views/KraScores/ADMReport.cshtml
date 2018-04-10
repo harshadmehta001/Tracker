@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "ADM Report Download";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+
+    <script src="~/scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/scripts/bootstrap.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="~/scripts/angular.min.js"></script>
+    <script src="~/scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
+
+    <script src="~/scripts/KRA Tracker/ADMReportDownload.js"></script>
+
+
+    <style>
+        .tabs > li > a {
+            color: #efbe29 !important;
+        }
+
+        .tabs > li > a:hover,
+        .tabs > li > a:focus {
+            background-color: #294489 !important;
+            color: #fff !important;
+            border-color: transparent !important;
+        }
+
+        .tabs > li.active > a {
+            background-color: #f2f2f2 !important;
+            color: #294489 !important;
+        }
+
+        .panel-heading {
+            background-color: #294489 !important;
+            padding: 10px 15px 0px 15px !important;
+        }
+
+        .nav-tabs {
+            border-bottom: none !important;
+        }
+
+        .panel-primary {
+            border-color: #294489 !important;
+        }
+
+        .panel-body {
+            background-color: #f2f2f2 !important;
+        }
+
+        .table {
+            border-collapse: unset !important;
+            border: 2px solid #000;
+            width: 90% !important;
+        }
+
+        th {
+            text-align: center;
+            color: #efbe29;
+        }
+
+        td {
+            text-align: center;
+            color: #294489;
+            border-top: none !important;
+        }
+
+        .table-left-col {
+            text-align: left !important;
+            padding-left: 55px !important;
+        }
+
+        .btn-primary {
+            background-color: #3c8dbc !important;
+            border-color: #367fa9 !important;
+        }
+
+        .background-yellow {
+            background-color: #efbe29;
+        }
+
+        .background-blue {
+            background-color: #294489;
+        }
+
+        .tabs-margin-bottom {
+            margin-top: 15px;
+        }
+
+        .msg-label {
+            color: #294489;
+            padding-top: unset !important;
+        }
+    </style>
+
+</head>
+<body ng-app="app" ng-controller="ADMReportCtrl" ng-cloak class="ng-cloak">
+    <div class="container">
+        <div class="form-horizontal">
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Select Manager :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedManager" ng-options="manager.id as manager.name for manager in managers"
+                            ng-change="getProjects()">
+                        <option value=""> --Select Manager-- </option>
+                    </select>
+                </div>
+
+                <label class="control-label col-md-2">Select Year :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedYear" ng-options="year for year in years"
+                            ng-change="generateADMReport()">
+                        <option value=""> --Select Year-- </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="panel panel-primary">
+                    <div class="panel-heading" ng-show="selectedYear && selectedManager">
+                        <ul class="nav nav-tabs tabs">
+                            <li class="active"><a href="#tabADMReport" data-toggle="tab" ng-init="generateADMReport()" ng-click="generateADMReport()">KRA Calculation Sheet ADMs</a></li>
+                            <li ng-repeat="project in projects">
+                                <a href="{{ '#tab' + project.Name + 'Report'}}" data-toggle="tab"
+                                   ng-click="generatePMReport(project.AccountID)">KRA Calc PMs -{{project.Name}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="panel-body">
+                        <label class="control-label msg-label" ng-show="!selectedYear">--- Please select a year ---</label>
+                        <div class="tab-content" ng-show="selectedYear && selectedManager">
+                            <div class="tab-pane fade in active" id="#tabADMReport">
+                                <report parameterdetails="parameterDetails" finalscore="finalScore" quarters="quarters" />
+                            </div>
+                            <div class="tab-pane fade" id="{{ 'tab' + project.Name + 'Report' }}" ng-repeat="project in projects">
+                                <report parameterdetails="parameterDetails" finalscore="finalScore" quarters="quarters" />
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-8 col-md-3">
+                                    <a class="btn btn-primary" href="{{ 'GetADMReportExcel/'+selectedManager+'/' + selectedYear}}">Download Full Report</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+
+    </div>
+
+</body>
+</html>

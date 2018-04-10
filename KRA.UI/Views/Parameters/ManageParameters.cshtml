@@ -1,0 +1,211 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../scripts/jquery-1.9.1.min.js"></script>
+    <script src="../scripts/bootstrap.min.js"></script>
+    <link href="../Content/bootstrap-theme.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.2.1.js"
+            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+            crossorigin="anonymous"></script>
+    <script src="../scripts/angular.js"></script>
+    <script src="../scripts/angular-touch.js"></script>
+    <script src="../scripts/angular-animate.js"></script>
+    <script src="../scripts/ui-grid.min.js"></script>
+    <link href="../Content/ui-grid.min.css" rel="stylesheet" />
+
+    <link href="../Content/bootstrap.css" rel="stylesheet" />
+
+    <style>
+        .quarterRow {
+            background-color: #3F638D !important;
+            color: white;
+        }
+
+        .parameterRow {
+            background-color: #702723 !important;
+            color: white;
+        }
+
+        body > div:nth-child(1) > div.form-horizontal > div:nth-child(4) > div:nth-child(3n+6) {
+            margin-left: 25%;
+        }
+    </style>
+
+    <script>
+
+        var app = angular.module('app', ['ngTouch', 'ui.grid', 'ui.grid.expandable', 'ui.grid.selection', 'ui.grid.pinning', 'ui.grid.exporter']);
+
+        app.service("GetJsonData", function ($http) {
+            this.usingWebService = function (url) {
+                $http.get(url)
+                    .then(function (response) {
+                        return response.data;
+                    });
+            }
+        });
+
+        app.controller('Ctrl', ['$scope', '$http', function ($scope, $http) {
+
+           $http.get("/Parameters/GetAccounts")
+                   .then(function (response) {
+                       $scope.projects = response.data;
+                   });
+
+
+
+
+            
+          //  $scope.parameters = [{ id: "1", name: "CSAT" }, { id: "2", name: "DRE" }, { id: "3", name: "SLA" },
+            //    { id: "4", name: "CSAT" }, { id: "5", name: "DRE" }, { id: "6", name: "SLA" },
+            //    { id: "7", name: "CSAT" }, { id: "8", name: "DRE" }, { id: "9", name: "SLA" }];
+
+
+            // $scope.gridOptions.data = GetJsonData.usingWebService("");
+
+            //$scope.projects = GetJsonData.usingWebService("");
+            $scope.selectedProject = "";
+
+
+            $scope.getQuarters = function () {
+                //$scope.parameters = GetJsonData.usingWebService("");
+                $scope.quarters = ["Quarter1", "Quarter2", "Quarter3", "Quarter4"];
+                $scope.selectedQuarter = "";
+            }
+
+            $scope.getAllParameters = function () {
+                $http.get("/Parameters/GetAccountParameters")
+                  .then(function (response) {
+                      $scope.parameters = response.data;
+                  });
+                $scope.selectedParameters = [];
+            }
+
+            $scope.parameterSelection = function (parameterID) {
+                var index = $scope.selectedParameters.indexOf(parameterID);
+
+                // Is currently selected
+                if (index > -1) {
+                    $scope.selectedParameters.splice(index, 1);
+                }
+                    // Is newly selected
+                else {
+                    $scope.selectedParameters.push(parameterID);
+                }
+            };
+            $scope.addParameter = function () {
+                var param = { ParamName: $scope.newParameter };
+                $http({
+                    method: 'POST',
+                    url: '/Parameters/AddNewParameter',
+                    dataType: 'json',
+                    data: param,
+
+                }).then(function (response) {
+
+                    alert("Parameters Added" + JSON.stringify(response));
+                });
+
+
+            };
+            $scope.saveNewParameter = function () {
+                var projectParameters = {
+                    projectId: $scope.selectedProject, quarter: $scope.selectedQuarter, paramters   : $scope.selectedParameters
+                };
+                $http({
+                    method: 'POST',
+                    dataType:'JSON',
+                    url : "/Parameters/SaveAccountParameters", 
+                    data: projectParameters
+                }).then(function (response) {
+
+                    $scope.parametersAdded = response;
+                    alert(JSON.stringify($scope.parametersAdded));
+                }
+                    );
+                $scope.selectedProject = "";
+            }
+        }]);
+
+    </script>
+</head>
+<body ng-app="app" ng-controller="Ctrl">
+    <div class="container">
+   
+        <div class="form-horizontal">
+
+        
+            <div class="form-group">
+                <label class="control-label col-md-3">Select project :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedProject" ng-options="project.AccountID as project.Name for project in projects"
+                            ng-change="getQuarters()">
+                        <option value=""> --Select project-- </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 col-md-offset-3" style="text-align:right;">
+                    <a data-toggle="modal" data-target="#addParameterModal" style="cursor:pointer;"> Add new parameter</a>
+                </div>
+            </div>
+            <div class="form-group" ng-show="selectedProject">
+                <label class="control-label col-md-3">Select Quarter :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedQuarter" ng-options="quarter for quarter in quarters"
+                            ng-change="getAllParameters()">
+                        <option value="">-Select Quarter-</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="selectedProject && selectedQuarter">
+                <label class="control-label col-md-3">Select parameters for project :</label>
+                <div></div>
+                <div class="checkbox col-md-3" ng-repeat="parameter in parameters">
+                    <label class="control-label" style="text-align:left;">
+                        <input type="checkbox" class="form-control" style="width:15px !important; height:15px !important;"
+                               ng-checked="selectedParameters.indexOf(parameter.ParamID) > -1" ng-click="parameterSelection(parameter.ParamID)">
+                        {{ parameter.ParamName }}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="selectedProject && selectedQuarter">
+            <div class="col-md-2 col-md-offset-8">
+                <button class="btn btn-primary" style="width:100%;" ng-click="saveNewParameter()">Save</button>
+            </div>
+            <div class="" ng-show="" ng-messages="parametersAdded"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Modal -->
+        <div class="modal fade" id="addParameterModal" role="dialog">
+            <div class="modal-dialog" style="width:400px !important">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add KRA parameter</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form ng-submit="Submit()">
+                            <div class="form-group">
+                                <label for="newParameter">Parameter name:</label>
+                                <input type="text" class="form-control" id="newParameter" ng-model="newParameter">
+                            </div>
+                            <button type="submit" class="btn btn-default" ng-click="addParameter()" data-dismiss="modal"`q>Add parameter</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

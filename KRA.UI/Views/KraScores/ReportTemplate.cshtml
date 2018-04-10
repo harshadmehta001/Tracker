@@ -1,0 +1,26 @@
+﻿@{
+    Layout = null;
+}
+<div class="col-md-offset-2 col-md-8 tabs-margin-bottom">
+    <table class="table table-responsive">
+        <thead>
+            <tr class="background-blue">
+                <th class="table-left-col">Parameter</th>
+                <th>Weightage</th>
+                <th ng-repeat="quarter in quarters" ng-show="$index < parameterDetails[0].Score.length">{{quarter}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="parameter in parameterDetails">
+                <td class="table-left-col">{{parameter.ParameterName}}</td>
+                <td>{{parameter.Weightage}}%</td>
+                <td ng-repeat="score in parameter.Score track by $index">{{score | roundoff}}%</td>
+            </tr>
+            <tr class="background-yellow">
+                <td class="table-left-col">Final Score</td>
+                <td>100%</td>
+                <td ng-repeat="score in finalScore track by $index">{{score  | roundoff}}%</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

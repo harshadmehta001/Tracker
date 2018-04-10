@@ -1,0 +1,255 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../scripts/jquery-1.9.1.min.js"></script>
+    <script src="../scripts/bootstrap.min.js"></script>
+    <link href="../Content/bootstrap-theme.min.css" rel="stylesheet" />
+
+    <script src="../scripts/angular.js"></script>
+    <script src="../scripts/angular-touch.js"></script>
+    <script src="../scripts/angular-animate.js"></script>
+    <script src="../scripts/ui-grid.min.js"></script>
+    <link href="../Content/ui-grid.min.css" rel="stylesheet" />
+
+    <link href="../Content/bootstrap.css" rel="stylesheet" />
+
+    <style>
+        .quarterRow {
+            background-color: #3F638D !important;
+            color: white;
+        }
+
+        .parameterRow {
+            background-color: #702723 !important;
+            color: white;
+        }
+    </style>
+
+    <script>
+
+        var app = angular.module('app', ['ngTouch', 'ui.grid', 'ui.grid.expandable', 'ui.grid.selection', 'ui.grid.pinning', 'ui.grid.exporter']);
+
+        app.service("GetJsonData", function ($http) {
+            this.usingWebService = function (url) {
+                $http.get(url)
+                    .then(function (response) {
+                        return response.data;
+                    });
+            }
+        });
+
+        app.controller('Ctrl', ['$scope', '$http', '$log', '$timeout', 'GetJsonData', function ($scope, $http, $log, $timeout, GetJsonData) {
+            $scope.gridOptions = {
+                enableSorting: false,
+                enableColumnMenus: false,
+                expandableRowTemplate: '<div ui-grid="row.entity.subGridOptions" ui-grid-expandable></div>',
+                expandableRowHeight: 350,
+                onRegisterApi: function (gridApi) {
+                    gridApi.expandable.on.rowExpandedStateChanged($scope, function (row) {
+                        if (row.isExpanded) {
+                            row.entity.subGridOptions = {
+                                enableSorting: false,
+                                enableColumnMenus: false,
+                                expandableRowTemplate: '<div ui-grid="row.entity.subGridOptions2" style="height : 150px"></div>',
+                                expandableRowHeight: 150,
+                                onRegisterApi: function (gridApi) {
+                                    gridApi.expandable.on.rowExpandedStateChanged($scope, function (row) {
+                                        if (row.isExpanded) {
+                                            row.entity.subGridOptions2 = {
+                                                enableSorting: false,
+                                                enableColumnMenus: false,
+                                                columnDefs: [
+                                                    { name: 'Min value' },
+                                                    { name: 'max value' },
+                                                    { name: 'Result' }
+                                                ]
+                                            };
+                                            row.entity.subGridOptions2.data = GetJsonData.usingWebService("" + $scope.selectedProject + $scope.selectedParameter);;
+                                        }
+                                    });
+                                },
+                                columnDefs: [
+                                     { name: 'Parameter', pinnedLeft: true, cellClass: 'parameterRow' },
+                                     { name: 'Weightage', cellClass: 'parameterRow' }
+                                ]
+                            };
+
+
+                            row.entity.subGridOptions.data = [{ Parameter: "CSAT", Weightage: 25 }, { Parameter: "DRE", Weightage: 25 }, { Parameter: "SLA", Weightage: 25 }];
+                        }
+                    });
+                },
+                columnDefs: [
+                  { name: 'Quarter', pinnedLeft: true, cellClass: 'quarterRow' }
+                ]
+            };
+
+            $http.get("/Parameters/GetAccounts")
+                               .then(function (response) {
+                                   $scope.projects = response.data;
+                               });
+         //   $scope.parameters = [{ id: "1", name: "CSAT" }, { id: "2", name: "DRE" }, { id: "3", name: "SLA" }];
+         //   $scope.quarters = ["Quarter1", "Quarter2", "Quarter3", "Quarter4"];
+            $scope.gridOptions.data = [{ Quarter: "Quarter1" }, { Quarter: "Quarter2" }, { Quarter: "Quarter3" }, { Quarter: "Quarter4" }];
+
+            //$scope.gridOptions.data = GetJsonData.usingWebService("");
+
+            //$scope.projects = GetJsonData.usingWebService("");
+            $scope.selectedProject = "";
+
+            $scope.getQuarters = function () {
+                var SelectedData = { AccountID: $scope.selectedProject };
+                $http({
+                    url: '/Parameters/GetQuarters',
+                    data: SelectedData,
+                    method: 'POST',
+
+
+                })
+                  .then(function (response) {
+                      $scope.quarters = response.data;
+                  });
+
+                $scope.selectedQuarter = "";
+            }
+
+            $scope.getProjectParameters = function () {
+                var SelectedData = { AccountID: $scope.selectedProject, Quarter: $scope.selectedQuarter };
+                $http({
+                    url: '/Parameters/GetAccountParameters',
+                    data: SelectedData,
+                    method: 'POST',
+
+
+                })
+                  .then(function (response) {
+                      $scope.parameters = response.data;
+                  });
+                $scope.selectedParameter = "";
+                $scope.weightage = "";
+
+            }
+
+            $scope.createParameterDefinitionTemplate = function () {
+                $scope.parameterDefinitions = [{ id: $scope.selectedParameter, MinValue: null, maxValue: null, result: null }];
+            }
+
+            $scope.addParameterDefinitionTemplate = function () {
+                $scope.parameterDefinitions.push({ id: $scope.selectedParameter, MinValue: null, maxValue: null, result: null });
+            };
+
+            $scope.removeParameterDefinitionTemplate = function () {
+                $scope.parameterDefinitions.pop();
+            };
+
+            $scope.saveParameterDefinition = function () {
+                var data = $scope.parameterDefinitions;
+                $http.post("",$scope.weightage + data);
+                $scope.selectedParameter = "";
+                // $scope.gridOptions.data = GetJsonData.usingWebService("");
+            };
+
+
+
+
+
+        }]);
+
+    </script>
+</head>
+<body ng-app="app" ng-controller="Ctrl">
+    <div class="container">
+        <div style="height:150px">
+
+        </div>
+        <div class="form-horizontal">
+
+            <div class="form-group">
+                <ul>
+                    <li style="display:inline-block">
+                        <a href="ManageParameters.html">Manage Parameters</a>
+                    </li>
+                    <li style="display:inline-block">
+                        <a href="ManageParameterDefinitions.html">Manage Parameters Definitions</a>
+                    </li>
+                    <li style="display:inline-block">
+                        <a href="InputScores.html">Input Scores</a>
+                    </li>
+                    <li style="display:inline-block">
+                        <a href="PMReportDownload.html">PM Report Download</a>
+                    </li>
+                    <li style="display:inline-block"> KRA Report Download</a> </li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Select project :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedProject" ng-options="project.id as project.name for project in projects"
+                            ng-change="getQuarters()">
+                        <option value=""> --Select project-- </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" ng-show="selectedProject">Select Quarter :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedQuarter" ng-show="selectedProject"
+                            ng-options="quarter for quarter in quarters" ng-change="getProjectParameters()">
+                        <option value="">-Select Quarter-</option>
+                    </select>
+                </div>
+
+                <label class="control-label col-md-2" ng-show="selectedProject && selectedQuarter">Select parameter :</label>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="selectedParameter" ng-show="selectedProject && selectedQuarter"
+                            ng-options="parameter.id as parameter.name for parameter in parameters" ng-change="createParameterDefinitionTemplate()">
+                        <option value="">-Select parameter-</option>
+                    </select>
+                </div>
+
+                <label class="control-label col-md-2" ng-show="selectedProject && selectedParameter && selectedQuarter">Weightage :</label>
+                <div class="col-md-1" ng-show="selectedProject && selectedParameter && selectedQuarter">
+                    <input type="text" class="form-control" ng-model="weightage" />
+                </div>
+            </div>
+
+            <div class="form-group" ng-repeat="definition in parameterDefinitions" ng-show="selectedProject && selectedParameter && selectedQuarter">
+               
+                <label class="control-label col-md-2">Maximum value</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" ng-model="definition.maxValue" max="100"/>
+                </div>
+                <label class="control-label col-md-2">Minimum value</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" ng-model="definition.MinValue" max="100" />
+                </div>
+                <label class="control-label col-md-2">Result</label>
+                <div class="col-md-1">
+                    <input type="text" class="form-control" ng-model="definition.result" />
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="selectedProject && selectedParameter && selectedQuarter">
+                <div class="col-md-2 col-md-offset-6">
+                    <a href="#" ng-click="addParameterDefinitionTemplate()">Add definition</a>
+                </div>
+                <div class="col-md-2">
+                    <a href="#" ng-click="removeParameterDefinitionTemplate()">remove definition</a>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary" style="width:50%;" ng-click="saveParameterDefinition()">Save</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <div ui-grid="gridOptions" ui-grid-expandable></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>

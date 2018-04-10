@@ -1,0 +1,76 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRA.Models", "KRA.Models\KRA.Models.csproj", "{A2A80DD8-02C9-4342-8AF1-C40A4930231A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRA.Data", "KRA.Data\KRA.Data.csproj", "{66177794-28AB-4214-BDC2-47BED555ED17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRA.DataSql", "KRA.DataSql\KRA.DataSql.csproj", "{A2C2D71A-F234-40AC-AB9A-8FA2EB811CEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRA.Domain", "KRA.Domain\KRA.Domain.csproj", "{DA2A689D-21B5-489E-BB8C-23CEF7152330}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRA.UI", "KRA.UI\KRA.UI.csproj", "{E4466AFF-E43A-473C-95ED-808E1444BD62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRA.Entities", "KRA.Entities\KRA.Entities.csproj", "{C6BE2040-C87E-4780-A2F5-C0C6A1943A59}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2A80DD8-02C9-4342-8AF1-C40A4930231A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2A80DD8-02C9-4342-8AF1-C40A4930231A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2A80DD8-02C9-4342-8AF1-C40A4930231A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2A80DD8-02C9-4342-8AF1-C40A4930231A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66177794-28AB-4214-BDC2-47BED555ED17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66177794-28AB-4214-BDC2-47BED555ED17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66177794-28AB-4214-BDC2-47BED555ED17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66177794-28AB-4214-BDC2-47BED555ED17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2C2D71A-F234-40AC-AB9A-8FA2EB811CEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2C2D71A-F234-40AC-AB9A-8FA2EB811CEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2C2D71A-F234-40AC-AB9A-8FA2EB811CEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2C2D71A-F234-40AC-AB9A-8FA2EB811CEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA2A689D-21B5-489E-BB8C-23CEF7152330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA2A689D-21B5-489E-BB8C-23CEF7152330}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA2A689D-21B5-489E-BB8C-23CEF7152330}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA2A689D-21B5-489E-BB8C-23CEF7152330}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4466AFF-E43A-473C-95ED-808E1444BD62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4466AFF-E43A-473C-95ED-808E1444BD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4466AFF-E43A-473C-95ED-808E1444BD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4466AFF-E43A-473C-95ED-808E1444BD62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6BE2040-C87E-4780-A2F5-C0C6A1943A59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6BE2040-C87E-4780-A2F5-C0C6A1943A59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6BE2040-C87E-4780-A2F5-C0C6A1943A59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6BE2040-C87E-4780-A2F5-C0C6A1943A59}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 7
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://iris-tfs-02:8080/tfs/tfs2017collection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = KRA.Data\\KRA.Data.csproj
+		SccProjectName1 = KRA.Data
+		SccLocalPath1 = KRA.Data
+		SccProjectUniqueName2 = KRA.DataSql\\KRA.DataSql.csproj
+		SccProjectName2 = KRA.DataSql
+		SccLocalPath2 = KRA.DataSql
+		SccProjectUniqueName3 = KRA.Domain\\KRA.Domain.csproj
+		SccProjectName3 = KRA.Domain
+		SccLocalPath3 = KRA.Domain
+		SccProjectUniqueName4 = KRA.Entities\\KRA.Entities.csproj
+		SccProjectName4 = KRA.Entities
+		SccLocalPath4 = KRA.Entities
+		SccProjectUniqueName5 = KRA.Models\\KRA.Models.csproj
+		SccProjectName5 = KRA.Models
+		SccLocalPath5 = KRA.Models
+		SccProjectUniqueName6 = KRA.UI\\KRA.UI.csproj
+		SccProjectName6 = KRA.UI
+		SccLocalPath6 = KRA.UI
+	EndGlobalSection
+EndGlobal
